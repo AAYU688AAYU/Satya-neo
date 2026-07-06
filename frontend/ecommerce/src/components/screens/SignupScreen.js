@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Row, Col, Container } from "react-bootstrap";
+import { Form, Button, Row, Col, Container, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../Loader";
 import Message from "../Message";
 import { register } from "../../actions/authActions";
+import { UserPlus, Shield } from "lucide-react";
+import { motion } from "framer-motion";
 
 function SignupScreen() {
   const [fname, setFname] = useState("");
@@ -22,7 +24,7 @@ function SignupScreen() {
 
   useEffect(() => {
     if (userInfo) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [userInfo, navigate]);
 
@@ -31,81 +33,128 @@ function SignupScreen() {
     if (password !== confirmPassword) {
       setMessage("Passwords do not match");
     } else {
+      setMessage(null);
       dispatch(register(fname, lname, email, password));
     }
   };
 
   return (
-    <Container className="py-4">
-      <Row className="justify-content-md-center">
-        <Col xs={12} md={6}>
-          <h1>Sign Up</h1>
+    <Container className="py-5 d-flex justify-content-center align-items-center" style={{ minHeight: "90vh" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{ width: "100%", maxWidth: "520px" }}
+      >
+        <Card className="card-premium border-0 p-4 p-md-5">
+          <div className="text-center mb-4">
+            <div
+              className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+              style={{
+                width: "60px",
+                height: "60px",
+                backgroundColor: "rgba(11, 60, 120, 0.08)",
+                color: "var(--color-primary)"
+              }}
+            >
+              <UserPlus size={30} className="animate-pulse" />
+            </div>
+            <h2 className="mb-2" style={{ color: "var(--color-primary)", fontWeight: "700" }}>Register Account</h2>
+            <p className="text-muted" style={{ fontSize: "14px" }}>Create your credentials to access the platform</p>
+          </div>
+
           {message && <Message variant="danger">{message}</Message>}
           {error && <Message variant="danger">{error}</Message>}
-          {loading && <Loader />}
+          {loading && <div className="text-center py-2"><Loader /></div>}
+
           <Form onSubmit={submitHandler}>
-            <Form.Group controlId="fname" className="my-3">
-              <Form.Label>First Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter first name"
-                value={fname}
-                onChange={(e) => setFname(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+            <Row>
+              <Col md={6}>
+                {/* First Name */}
+                <div className="form-floating-premium">
+                  <input
+                    type="text"
+                    id="fname"
+                    placeholder="First Name"
+                    value={fname}
+                    onChange={(e) => setFname(e.target.value)}
+                    required
+                  />
+                  <label htmlFor="fname">First Name</label>
+                </div>
+              </Col>
+              <Col md={6}>
+                {/* Last Name */}
+                <div className="form-floating-premium">
+                  <input
+                    type="text"
+                    id="lname"
+                    placeholder="Last Name"
+                    value={lname}
+                    onChange={(e) => setLname(e.target.value)}
+                    required
+                  />
+                  <label htmlFor="lname">Last Name</label>
+                </div>
+              </Col>
+            </Row>
 
-            <Form.Group controlId="lname" className="my-3">
-              <Form.Label>Last Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter last name"
-                value={lname}
-                onChange={(e) => setLname(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId="email" className="my-3">
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
+            {/* Email Address */}
+            <div className="form-floating-premium">
+              <input
                 type="email"
+                id="email"
                 placeholder="Enter email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+                required
+              />
+              <label htmlFor="email">Email Address</label>
+            </div>
 
-            <Form.Group controlId="password" className="my-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
+            {/* Password */}
+            <div className="form-floating-premium">
+              <input
                 type="password"
+                id="password"
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+                required
+              />
+              <label htmlFor="password">Password</label>
+            </div>
 
-            <Form.Group controlId="confirmPassword" className="my-3">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
+            {/* Confirm Password */}
+            <div className="form-floating-premium">
+              <input
                 type="password"
+                id="confirmPassword"
                 placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+                required
+              />
+              <label htmlFor="confirmPassword">Confirm Password</label>
+            </div>
 
-            <Button type="submit" variant="primary">
-              Register
+            <Button
+              type="submit"
+              disabled={loading}
+              className="btn-premium btn-premium-primary w-100 text-white py-3 mt-2"
+              style={{ borderRadius: "8px", fontWeight: "600", fontSize: "15px" }}
+            >
+              Initialize Profile
             </Button>
           </Form>
 
-          <Row className="py-3">
-            <Col>
-              Have an account? <Link to="/login">Login</Link>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+          <div className="text-center mt-4">
+            <span className="text-muted" style={{ fontSize: "13px" }}>
+              Already registered? <Link to="/login" style={{ color: "var(--color-secondary)", fontWeight: "600", textDecoration: "none" }}>Sign In</Link>
+            </span>
+          </div>
+        </Card>
+      </motion.div>
     </Container>
   );
 }

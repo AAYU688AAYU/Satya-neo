@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Row, Col, Container } from "react-bootstrap";
+import { Form, Button, Row, Col, Container, Card } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../Loader";
 import Message from "../Message";
 import { login } from "../../actions/authActions";
+import { Shield, Eye, EyeOff } from "lucide-react";
+import { motion } from "framer-motion";
 
 function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -17,7 +20,7 @@ function LoginScreen() {
 
   useEffect(() => {
     if (userInfo) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [userInfo, navigate]);
 
@@ -27,45 +30,86 @@ function LoginScreen() {
   };
 
   return (
-    <Container className="py-4">
-      <Row className="justify-content-md-center">
-        <Col xs={12} md={6}>
-          <h1>Sign In</h1>
+    <Container className="py-5 d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{ width: "100%", maxWidth: "460px" }}
+      >
+        <Card className="card-premium border-0 p-4 p-md-5">
+          <div className="text-center mb-4">
+            <div
+              className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+              style={{
+                width: "60px",
+                height: "60px",
+                backgroundColor: "rgba(11, 60, 120, 0.08)",
+                color: "var(--color-primary)"
+              }}
+            >
+              <Shield size={30} className="animate-pulse" />
+            </div>
+            <h2 className="mb-2" style={{ color: "var(--color-primary)", fontWeight: "700" }}>Portal Login</h2>
+            <p className="text-muted" style={{ fontSize: "14px" }}>Access your Earth Observation pipeline dashboard</p>
+          </div>
+
           {error && <Message variant="danger">{error}</Message>}
-          {loading && <Loader />}
+          {loading && <div className="text-center py-2"><Loader /></div>}
+
           <Form onSubmit={submitHandler}>
-            <Form.Group controlId="email" className="my-3">
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
+            {/* Email Address with Premium Floating label */}
+            <div className="form-floating-premium">
+              <input
                 type="email"
+                id="email"
                 placeholder="Enter email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+                required
+              />
+              <label htmlFor="email">Email Address / Username</label>
+            </div>
 
-            <Form.Group controlId="password" className="my-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
+            {/* Password with Premium Floating label */}
+            <div className="form-floating-premium position-relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+                required
+              />
+              <label htmlFor="password">Password</label>
+              
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="position-absolute bg-transparent border-0 text-muted"
+                style={{ right: "14px", top: "22px", zIndex: 10 }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
 
-            <Button type="submit" variant="primary">
-              Login
+            <Button
+              type="submit"
+              disabled={loading}
+              className="btn-premium btn-premium-primary w-100 text-white py-3 mt-2"
+              style={{ borderRadius: "8px", fontWeight: "600", fontSize: "15px" }}
+            >
+              Authenticate Identity
             </Button>
           </Form>
 
-          <Row className="py-3">
-            <Col>
-              New to satya-eo? <Link to="/signup">Sign up</Link>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+          <div className="text-center mt-4">
+            <span className="text-muted" style={{ fontSize: "13px" }}>
+              New to SATYA-EO? <Link to="/signup" style={{ color: "var(--color-secondary)", fontWeight: "600", textDecoration: "none" }}>Create credentials</Link>
+            </span>
+          </div>
+        </Card>
+      </motion.div>
     </Container>
   );
 }

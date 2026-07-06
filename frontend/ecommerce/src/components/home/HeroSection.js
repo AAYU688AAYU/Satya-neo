@@ -1,98 +1,131 @@
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
-import { FaSatellite, FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { Satellite, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 function HeroSection() {
   return (
     <section
       style={{
         minHeight: "90vh",
-        background: "#071B34",
+        background: "radial-gradient(ellipse at center, #0B2545 0%, #071B34 100%)",
         display: "flex",
         alignItems: "center",
+        color: "white",
+        padding: "80px 0"
       }}
     >
       <Container>
-        <Row className="align-items-center">
-
+        <Row className="align-items-center gy-5">
           <Col lg={6}>
-            <span
-              style={{
-                color: "#49B6FF",
-                fontWeight: "600",
-                letterSpacing: "2px",
-              }}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              AI Powered Earth Observation
-            </span>
-
-            <h1
-              style={{
-                color: "#fff",
-                fontSize: "58px",
-                fontWeight: "700",
-                marginTop: "20px",
-              }}
-            >
-              Beyond Cloud Removal
-            </h1>
-
-            <h3
-              style={{
-                color: "#49B6FF",
-                marginBottom: "25px",
-              }}
-            >
-              Satellite Assisted Trustworthy Earth Observation
-            </h3>
-
-            <p
-              style={{
-                color: "#C9D3DE",
-                lineHeight: "1.8",
-                fontSize: "18px",
-              }}
-            >
-              SATYA-EO reconstructs cloud-covered satellite imagery
-              using Artificial Intelligence and multi-source Earth
-              Observation data to generate reliable cloud-free outputs.
-            </p>
-
-            <div className="mt-4">
-
-              <Button
+              <span
                 style={{
-                  background: "#1565FF",
-                  border: "none",
-                  padding: "12px 28px",
-                  marginRight: "15px",
+                  color: "var(--color-accent)",
+                  fontWeight: "600",
+                  letterSpacing: "3px",
+                  fontSize: "12px",
+                  textTransform: "uppercase",
+                  display: "block",
+                  marginBottom: "10px"
                 }}
               >
-                <FaSatellite /> Run Demo
-              </Button>
+                AI Powered Earth Observation
+              </span>
 
-              <Button
-                variant="outline-light"
+              <h1
                 style={{
-                  padding: "12px 28px",
+                  color: "#fff",
+                  fontSize: "52px",
+                  fontWeight: "800",
+                  lineHeight: "1.2",
+                  fontFamily: "var(--font-secondary)"
                 }}
               >
-                Learn More <FaArrowRight />
-              </Button>
+                Beyond Cloud Removal
+              </h1>
 
-            </div>
+              <h3
+                style={{
+                  color: "#E2E8F0",
+                  fontSize: "20px",
+                  fontWeight: "400",
+                  marginTop: "10px",
+                  marginBottom: "25px",
+                }}
+              >
+                Satellite-Assisted Trustworthy Earth Observation (SATYA-EO)
+              </h3>
+
+              <p
+                style={{
+                  color: "#94A3B8",
+                  lineHeight: "1.9",
+                  fontSize: "16px",
+                  maxWidth: "500px"
+                }}
+              >
+                SATYA-EO reconstructs cloud-occluded satellite imagery using multisource 
+                sensor fusion (SAR & Optical) and custom neural pipelines, producing high-accuracy, 
+                cloud-free analytical layers.
+              </p>
+
+              <div className="d-flex gap-3 mt-4">
+                <Button
+                  as={Link}
+                  to="/dashboard"
+                  className="btn-premium btn-premium-primary text-white"
+                  style={{
+                    background: "var(--color-secondary)",
+                    borderColor: "var(--color-secondary)",
+                    borderRadius: "30px",
+                    padding: "12px 28px"
+                  }}
+                >
+                  <Satellite size={16} /> Run Live Demo
+                </Button>
+
+                <Button
+                  as="a"
+                  href="#problem"
+                  className="btn-premium btn-premium-outline text-white border-white"
+                  style={{
+                    borderRadius: "30px",
+                    padding: "12px 28px"
+                  }}
+                >
+                  Learn More <ArrowRight size={16} />
+                </Button>
+              </div>
+            </motion.div>
           </Col>
 
           <Col lg={6} className="text-center">
-
-            <img
-              src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900"
-              alt="Earth"
-              className="img-fluid rounded shadow"
-            />
-
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              style={{
+                position: "relative",
+                borderRadius: "var(--radius-lg)",
+                overflow: "hidden",
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+              }}
+            >
+              <img
+                src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900"
+                alt="Earth Satellites Orbiting"
+                className="img-fluid"
+                style={{ filter: "brightness(0.95)" }}
+              />
+            </motion.div>
           </Col>
-
         </Row>
       </Container>
     </section>
