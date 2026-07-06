@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Table, Button, Modal, Accordion } from "react-bootstrap";
+import React, { useState } from "react";
+import { Row, Col, Table, Button, Modal, Accordion } from "react-bootstrap";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Layers, UploadCloud, Database, Cpu, FileSpreadsheet, Settings, Menu, ChevronLeft, ChevronRight,
-  TrendingUp, Activity, BarChart3, PieChart, Sparkles, Filter, RefreshCw, Eye, Trash2, CheckCircle2,
-  AlertTriangle, Play, Info, Layers2, FileText, Check, ChevronDown, HelpCircle, X, Search
+  Layers, UploadCloud, Database, Cpu, FileSpreadsheet, ChevronLeft, ChevronRight,
+  TrendingUp, Activity, Sparkles, Filter, RefreshCw, Eye, Trash2, CheckCircle2,
+  AlertTriangle, Play, Info, Layers2, FileText, Check, X, Search
 } from "lucide-react";
 
 // Initial mock datasets representing processed rasters

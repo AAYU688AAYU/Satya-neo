@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Loader from "../Loader";
 import Message from "../Message";
 import { register } from "../../actions/authActions";
-import { UserPlus, Shield } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 
 function SignupScreen() {

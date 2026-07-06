@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/authActions";
 import logo from "../../assets/images/satya-logo.png";
-import { Search, Bell, Settings, Sun, Moon, User, LogOut, LayoutDashboard } from "lucide-react";
+import { Search, Bell, Settings, Sun, Moon, LogOut, LayoutDashboard } from "lucide-react";
 
 function Header() {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Globe, ShieldAlert, Award, FileText } from "lucide-react";
+import { Globe, ShieldAlert, Award } from "lucide-react";
 
 function Footer() {
   return (
@@ -55,12 +55,12 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#" style={{ color: "#94A3B8", textDecoration: "none" }}>
+                <a href="#!" style={{ color: "#94A3B8", textDecoration: "none" }}>
                   Documentation & APIs
                 </a>
               </li>
               <li>
-                <a href="#" style={{ color: "#94A3B8", textDecoration: "none" }}>
+                <a href="#!" style={{ color: "#94A3B8", textDecoration: "none" }}>
                   Developer Portal
                 </a>
               </li>
@@ -98,8 +98,8 @@ function Footer() {
             © 2026 SATYA-EO | Satellite Assisted Trustworthy Earth Observation Platform. All rights reserved.
           </div>
           <div className="d-flex gap-4" style={{ fontSize: "13px" }}>
-            <a href="#" style={{ color: "#94A3B8", textDecoration: "none" }}>Privacy Policy</a>
-            <a href="#" style={{ color: "#94A3B8", textDecoration: "none" }}>Terms of Service</a>
+            <a href="#!" style={{ color: "#94A3B8", textDecoration: "none" }}>Privacy Policy</a>
+            <a href="#!" style={{ color: "#94A3B8", textDecoration: "none" }}>Terms of Service</a>
           </div>
         </div>
       </Container>
