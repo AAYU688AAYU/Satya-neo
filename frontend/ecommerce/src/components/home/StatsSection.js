@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import { motion } from "framer-motion";
 
 const stats = [
   {
@@ -32,78 +33,68 @@ function StatsSection() {
   return (
     <section
       style={{
-        background: "#081C38",
-        padding: "90px 0",
+        background: "var(--color-background)",
+        padding: "100px 0",
       }}
     >
       <Container>
-
         <div className="text-center mb-5">
-
+          <span
+            style={{
+              color: "var(--color-secondary)",
+              fontWeight: "600",
+              letterSpacing: "2px",
+              fontSize: "12px",
+              textTransform: "uppercase"
+            }}
+          >
+            Capabilities
+          </span>
           <h2
             style={{
-              color: "#fff",
+              color: "var(--color-primary)",
               fontWeight: "700",
+              marginTop: "10px",
+              fontFamily: "var(--font-secondary)"
             }}
           >
             Trusted Earth Observation Platform
           </h2>
-
-          <p
-            style={{
-              color: "#AFC3D8",
-            }}
-          >
-            Delivering intelligent cloud-free satellite imagery powered by AI.
+          <p className="text-muted" style={{ maxWidth: "600px", margin: "10px auto 0" }}>
+            Delivering intelligent cloud-free satellite imagery powered by AI models.
           </p>
-
         </div>
 
-        <Row>
-
+        <Row className="gy-4">
           {stats.map((item, index) => (
-
-            <Col lg={3} md={6} className="mb-4" key={index}>
-
-              <Card
-                style={{
-                  background: "#102C53",
-                  border: "1px solid rgba(255,255,255,.08)",
-                  borderRadius: "20px",
-                  padding: "35px",
-                  height: "100%",
-                  color: "white",
-                }}
+            <Col lg={3} md={6} key={index}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="h-100"
               >
-
-                <h1
-                  style={{
-                    color: "#49B6FF",
-                    fontWeight: "700",
-                  }}
-                >
-                  {item.number}
-                </h1>
-
-                <h5>{item.title}</h5>
-
-                <p
-                  style={{
-                    color: "#C9D3DE",
-                    marginTop: "15px",
-                  }}
-                >
-                  {item.description}
-                </p>
-
-              </Card>
-
+                <Card className="card-premium h-100 border-0">
+                  <h1
+                    style={{
+                      color: "var(--color-secondary)",
+                      fontWeight: "700",
+                      fontFamily: "var(--font-secondary)",
+                      marginBottom: "10px"
+                    }}
+                  >
+                    {item.number}
+                  </h1>
+                  <h5 style={{ color: "var(--color-text)", fontWeight: "600" }}>{item.title}</h5>
+                  <p className="text-muted m-0" style={{ fontSize: "14px", marginTop: "10px", lineHeight: "1.6" }}>
+                    {item.description}
+                  </p>
+                </Card>
+              </motion.div>
             </Col>
-
           ))}
-
         </Row>
-
       </Container>
     </section>
   );

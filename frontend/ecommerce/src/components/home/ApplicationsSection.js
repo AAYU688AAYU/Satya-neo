@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import { motion } from "framer-motion";
 
 const applications = [
   {
@@ -44,83 +45,66 @@ function ApplicationsSection() {
   return (
     <section
       style={{
-        background: "#081C38",
+        background: "var(--color-background)",
         padding: "100px 0",
       }}
     >
       <Container>
-
         <div className="text-center mb-5">
-
+          <span
+            style={{
+              color: "var(--color-secondary)",
+              fontWeight: "600",
+              letterSpacing: "2px",
+              fontSize: "12px",
+              textTransform: "uppercase"
+            }}
+          >
+            Sectors & Impact
+          </span>
           <h2
             style={{
-              color: "#fff",
+              color: "var(--color-primary)",
               fontWeight: "700",
+              marginTop: "10px",
+              fontFamily: "var(--font-secondary)"
             }}
           >
             Real World Applications
           </h2>
-
-          <p
-            style={{
-              color: "#AFC3D8",
-              maxWidth: "720px",
-              margin: "20px auto",
-            }}
-          >
-            SATYA-EO provides reliable Earth Observation data for governments,
-            researchers, industries and disaster response agencies.
+          <p className="text-muted" style={{ maxWidth: "600px", margin: "10px auto 0" }}>
+            SATYA-EO provides reliable Earth Observation data for governments, researchers, industries and disaster response agencies.
           </p>
-
         </div>
 
-        <Row>
-
+        <Row className="gy-4">
           {applications.map((app, index) => (
-
-            <Col lg={4} md={6} key={index} className="mb-4">
-
-              <Card
-                style={{
-                  background: "#102C53",
-                  border: "1px solid rgba(255,255,255,.08)",
-                  borderRadius: "20px",
-                  color: "white",
-                  padding: "30px",
-                  height: "100%",
-                  transition: "0.3s",
-                }}
+            <Col lg={4} md={6} key={index}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="h-100"
               >
-
-                <div
-                  style={{
-                    fontSize: "45px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  {app.icon}
-                </div>
-
-                <h4>{app.title}</h4>
-
-                <p
-                  style={{
-                    color: "#C9D3DE",
-                    marginTop: "15px",
-                    lineHeight: "1.8",
-                  }}
-                >
-                  {app.description}
-                </p>
-
-              </Card>
-
+                <Card className="card-premium h-100 border-0">
+                  <div
+                    style={{
+                      fontSize: "40px",
+                      marginBottom: "15px",
+                    }}
+                  >
+                    {app.icon}
+                  </div>
+                  <h4 style={{ color: "var(--color-text)", fontWeight: "600" }}>{app.title}</h4>
+                  <p className="text-muted m-0" style={{ fontSize: "14px", marginTop: "10px", lineHeight: "1.7" }}>
+                    {app.description}
+                  </p>
+                </Card>
+              </motion.div>
             </Col>
-
           ))}
-
         </Row>
-
       </Container>
     </section>
   );
