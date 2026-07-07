@@ -70,7 +70,7 @@ function Header() {
             >
               Home
             </Nav.Link>
-            
+
             <Nav.Link
               as={Link}
               to="/dashboard"
