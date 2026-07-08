@@ -38,7 +38,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-secondary);
   font-weight: 600;
   color: #0F172A;
@@ -60,13 +65,16 @@ h1, h2, h3, h4, h5, h6 {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.02);
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(11, 60, 120, 0.15);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(11, 60, 120, 0.3);
 }
@@ -92,6 +100,7 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   border: 1px solid var(--color-primary);
 }
+
 .btn-premium-primary:hover:not(:disabled) {
   background-color: var(--color-secondary);
   border-color: var(--color-secondary);
@@ -104,6 +113,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-primary);
   border: 1px solid var(--color-border);
 }
+
 .btn-premium-secondary:hover:not(:disabled) {
   background-color: var(--color-background);
   border-color: var(--color-primary);
@@ -120,6 +130,7 @@ h1, h2, h3, h4, h5, h6 {
   color: white;
   border: 1px solid var(--color-danger);
 }
+
 .btn-premium-danger:hover:not(:disabled) {
   background-color: #B91C1C;
   transform: translateY(-1px);
@@ -130,6 +141,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
 }
+
 .btn-premium-outline:hover:not(:disabled) {
   background-color: rgba(0, 0, 0, 0.02);
   color: var(--color-text);
@@ -141,6 +153,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-text);
   border: none;
 }
+
 .btn-premium-ghost:hover:not(:disabled) {
   background-color: rgba(11, 60, 120, 0.05);
 }
@@ -156,6 +169,7 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   overflow: hidden;
 }
+
 .card-premium:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-medium);
@@ -167,6 +181,7 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   margin-bottom: 20px;
 }
+
 .form-floating-premium input,
 .form-floating-premium select,
 .form-floating-premium textarea {
@@ -181,6 +196,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: var(--transition-fast);
   color: var(--color-text);
 }
+
 .form-floating-premium input:focus,
 .form-floating-premium select:focus,
 .form-floating-premium textarea:focus {
@@ -188,6 +204,7 @@ h1, h2, h3, h4, h5, h6 {
   background: white;
   box-shadow: 0 0 0 4px rgba(11, 60, 120, 0.08);
 }
+
 .form-floating-premium label {
   position: absolute;
   top: 15px;
@@ -197,10 +214,11 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
   transition: var(--transition-fast);
 }
-.form-floating-premium input:focus ~ label,
-.form-floating-premium input:not(:placeholder-shown) ~ label,
-.form-floating-premium select:focus ~ label,
-.form-floating-premium select:not([value=""]) ~ label {
+
+.form-floating-premium input:focus~label,
+.form-floating-premium input:not(:placeholder-shown)~label,
+.form-floating-premium select:focus~label,
+.form-floating-premium select:not([value=""])~label {
   top: 4px;
   left: 14px;
   font-size: 11px;
@@ -216,11 +234,13 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow-subtle);
   overflow: hidden;
 }
+
 .table-premium {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
 }
+
 .table-premium th {
   background: rgba(11, 60, 120, 0.03);
   color: var(--color-primary);
@@ -232,6 +252,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
+
 .table-premium td {
   padding: 16px 20px;
   border-bottom: 1px solid var(--color-border);
@@ -239,6 +260,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 14px;
   transition: var(--transition-fast);
 }
+
 .table-premium tr:hover td {
   background: rgba(30, 136, 229, 0.02);
 }
@@ -255,18 +277,22 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
+
 .badge-premium-success {
   background-color: rgba(22, 163, 74, 0.1);
   color: var(--color-success);
 }
+
 .badge-premium-warning {
   background-color: rgba(245, 158, 11, 0.1);
   color: var(--color-warning);
 }
+
 .badge-premium-danger {
   background-color: rgba(220, 38, 38, 0.1);
   color: var(--color-danger);
 }
+
 .badge-premium-info {
   background-color: rgba(0, 188, 212, 0.1);
   color: var(--color-accent);
@@ -274,7 +300,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Collapsible Sidebar Layout styling */
 .sidebar-premium {
-  background: #071B34; /* Dark rich navy corresponding to ISRO/government portals */
+  background: #071B34;
+  /* Dark rich navy corresponding to ISRO/government portals */
   color: #E2E8F0;
   height: 100vh;
   position: sticky;
@@ -284,6 +311,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
 }
+
 .sidebar-link {
   display: flex;
   align-items: center;
@@ -297,10 +325,12 @@ h1, h2, h3, h4, h5, h6 {
   margin: 4px 12px;
   transition: var(--transition-fast);
 }
+
 .sidebar-link:hover {
   color: white;
   background: rgba(255, 255, 255, 0.05);
 }
+
 .sidebar-link.active {
   color: white;
   background: var(--color-secondary);
@@ -315,6 +345,7 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   margin-bottom: 30px;
 }
+
 .stepper-premium::before {
   content: '';
   position: absolute;
@@ -325,6 +356,7 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--color-border);
   z-index: 1;
 }
+
 .stepper-step {
   position: relative;
   z-index: 2;
@@ -340,14 +372,43 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-text-muted);
   transition: var(--transition-smooth);
 }
+
 .stepper-step.active {
   border-color: var(--color-primary);
   background: var(--color-primary);
   color: white;
   box-shadow: 0 0 0 4px rgba(11, 60, 120, 0.15);
 }
+
 .stepper-step.completed {
   border-color: var(--color-success);
   background: var(--color-success);
   color: white;
+}
+
+/* Sidebar Drag Resizer Handle */
+.sidebar-resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  cursor: col-resize;
+  background-color: rgba(255, 255, 255, 0.05);
+  z-index: 150;
+  transition: background-color 0.2s;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-resizer:hover,
+.sidebar-resizer:active {
+  background-color: var(--color-secondary) !important;
+  box-shadow: 0 0 10px var(--color-secondary);
+}
+
+/* Premium Wide Layout for Enterprise Portals */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1640px !important;
+  }
 }

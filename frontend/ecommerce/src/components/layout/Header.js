@@ -33,7 +33,7 @@ function Header() {
       className="glass-header sticky-top py-2"
       variant="light"
     >
-      <Container fluid className="px-lg-5">
+      <Container>
         {/* Left: Brand logo & name */}
         <Navbar.Brand
           as={Link}
@@ -70,7 +70,7 @@ function Header() {
             >
               Home
             </Nav.Link>
-            
+
             <Nav.Link
               as={Link}
               to="/dashboard"

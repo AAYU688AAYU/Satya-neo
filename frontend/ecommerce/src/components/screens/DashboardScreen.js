@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Table, Button, Modal, Accordion } from "react-bootstrap";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -19,6 +19,9 @@ const initialRasters = [
 
 export default function DashboardScreen() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(260);
+  const [isResizing, setIsResizing] = useState(false);
+
   const [activeTab, setActiveTab] = useState("overview");
   const [rasters, setRasters] = useState(initialRasters);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,6 +33,34 @@ export default function DashboardScreen() {
   const [isUploading, setIsUploading] = useState(false);
   const [stepperIndex, setStepperIndex] = useState(1);
   const [toasts, setToasts] = useState([]);
+
+  // Resize handler functions
+  const startResizing = (mouseDownEvent) => {
+    mouseDownEvent.preventDefault();
+    setIsResizing(true);
+  };
+
+  const stopResizing = () => {
+    setIsResizing(false);
+  };
+
+  const resize = (mouseMoveEvent) => {
+    const newWidth = mouseMoveEvent.clientX;
+    if (newWidth >= 180 && newWidth <= 450) {
+      setSidebarWidth(newWidth);
+    }
+  };
+
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener("mousemove", resize);
+      window.addEventListener("mouseup", stopResizing);
+    }
+    return () => {
+      window.removeEventListener("mousemove", resize);
+      window.removeEventListener("mouseup", stopResizing);
+    };
+  }, [isResizing]);
 
   // Filter & search logic
   const filteredRasters = rasters.filter((r) => {
@@ -106,9 +137,13 @@ export default function DashboardScreen() {
       {/* 1. Sidebar Panel */}
       <motion.div
         className="sidebar-premium"
-        style={{ width: sidebarCollapsed ? "72px" : "260px" }}
-        animate={{ width: sidebarCollapsed ? "72px" : "260px" }}
-        transition={{ duration: 0.2 }}
+        style={{
+          width: sidebarCollapsed ? "72px" : `${sidebarWidth}px`,
+          position: "relative",
+          userSelect: isResizing ? "none" : "auto"
+        }}
+        animate={{ width: sidebarCollapsed ? "72px" : `${sidebarWidth}px` }}
+        transition={{ duration: isResizing ? 0 : 0.2 }}
       >
         <div className="d-flex align-items-center justify-content-between px-3 py-4 border-bottom border-secondary">
           {!sidebarCollapsed && (
@@ -171,6 +206,14 @@ export default function DashboardScreen() {
             </button>
           </div>
         </div>
+
+        {/* Resize Handle */}
+        {!sidebarCollapsed && (
+          <div
+            onMouseDown={startResizing}
+            className="sidebar-resizer"
+          />
+        )}
       </motion.div>
 
       {/* Main Workspace */}
