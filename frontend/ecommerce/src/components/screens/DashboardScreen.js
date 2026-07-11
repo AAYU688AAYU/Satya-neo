@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Table, Button, Modal, Accordion } from "react-bootstrap";
+import { Row, Col, Table, Button, Modal, Accordion, Card } from "react-bootstrap";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Layers, UploadCloud, Database, Cpu, FileSpreadsheet, ChevronLeft, ChevronRight,
   TrendingUp, Activity, Sparkles, Filter, RefreshCw, Eye, Trash2, CheckCircle2,
   AlertTriangle, Play, Info, Layers2, FileText, Check, X, Search
 } from "lucide-react";
+import UploadSystem from "../gis/UploadSystem";
+import MapViewer from "../gis/MapViewer";
+import AnalysisWorkspace from "../gis/AnalysisWorkspace";
 
 // Initial mock datasets representing processed rasters
 const initialRasters = [
@@ -23,6 +26,7 @@ export default function DashboardScreen() {
   const [isResizing, setIsResizing] = useState(false);
 
   const [activeTab, setActiveTab] = useState("overview");
+  const [activeGisFile, setActiveGisFile] = useState(null);
   const [rasters, setRasters] = useState(initialRasters);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -133,14 +137,15 @@ export default function DashboardScreen() {
   };
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "var(--color-background)" }}>
+    <div className="d-flex" style={{ height: "calc(100vh - 80px)", overflow: "hidden", backgroundColor: "var(--color-background)" }}>
       {/* 1. Sidebar Panel */}
       <motion.div
         className="sidebar-premium"
         style={{
           width: sidebarCollapsed ? "72px" : `${sidebarWidth}px`,
           position: "relative",
-          userSelect: isResizing ? "none" : "auto"
+          userSelect: isResizing ? "none" : "auto",
+          height: "100%"
         }}
         animate={{ width: sidebarCollapsed ? "72px" : `${sidebarWidth}px` }}
         transition={{ duration: isResizing ? 0 : 0.2 }}
@@ -193,6 +198,13 @@ export default function DashboardScreen() {
               <FileSpreadsheet size={18} />
               {!sidebarCollapsed && <span>Reports & Export</span>}
             </button>
+            <button
+              onClick={() => setActiveTab("gis")}
+              className={`sidebar-link border-0 text-left bg-transparent ${activeTab === "gis" ? "active" : ""}`}
+            >
+              <Layers size={18} />
+              {!sidebarCollapsed && <span>GIS Map & Analysis</span>}
+            </button>
           </nav>
 
           <div className="px-3">
@@ -227,6 +239,7 @@ export default function DashboardScreen() {
             {activeTab === "pipeline" && "PyTorch Processing Pipeline"}
             {activeTab === "datasets" && "GeoTIFF Dataset Inventory"}
             {activeTab === "reports" && "Platform Analytics & Reports"}
+            {activeTab === "gis" && "GIS Map & AI Analysis"}
           </span>
         </div>
 
@@ -835,6 +848,61 @@ export default function DashboardScreen() {
                     </Table>
                   </div>
                 </div>
+              </Col>
+            </Row>
+          </motion.div>
+        )}
+
+        {/* Tab 5: GIS Map & Analysis */}
+        {activeTab === "gis" && (
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <h1 className="mb-1" style={{ fontSize: "28px", color: "var(--color-primary)" }}>GIS Map & Analysis Workspace</h1>
+                <p className="text-muted m-0">Drag and drop satellite rasters, visualize on the interactive map, and process with neural models.</p>
+              </div>
+              {activeGisFile && (
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => {
+                    setActiveGisFile(null);
+                    addToast("Workspace reset complete", "warning");
+                  }}
+                  className="btn-premium btn-premium-secondary"
+                  style={{ fontSize: "12px", borderRadius: "8px" }}
+                >
+                  Clear Active File
+                </Button>
+              )}
+            </div>
+
+            <Row className="gy-4">
+              {/* Left Column: Upload System */}
+              <Col lg={4}>
+                <UploadSystem onUploadSuccess={(file) => {
+                  setActiveGisFile(file);
+                  addToast(`Successfully uploaded and validated ${file.name}!`, "success");
+                }} />
+              </Col>
+
+              {/* Right Column: Leaflet Map Viewer */}
+              <Col lg={8}>
+                <MapViewer uploadedFile={activeGisFile} />
+              </Col>
+
+              {/* Bottom: Analysis Workspace */}
+              <Col xs={12}>
+                {activeGisFile ? (
+                  <AnalysisWorkspace uploadedFile={activeGisFile} />
+                ) : (
+                  <Card className="card-premium border-0 p-5 text-center bg-light" style={{ borderRadius: "16px" }}>
+                    <Layers size={48} className="text-muted mb-3 mx-auto animate-pulse" />
+                    <h5>No Active Satellite Raster Selected</h5>
+                    <p className="text-muted mb-0" style={{ fontSize: "14px" }}>
+                      Upload a satellite imagery GeoTIFF or select a file in the history list to activate the AI Analysis workspace.
+                    </p>
+                  </Card>
+                )}
               </Col>
             </Row>
           </motion.div>
