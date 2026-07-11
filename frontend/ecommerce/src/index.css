@@ -309,12 +309,11 @@ h6 {
   color: var(--color-accent);
 }
 
-/* Collapsible Sidebar Layout styling */
 .sidebar-premium {
   background: #071B34;
   /* Dark rich navy corresponding to ISRO/government portals */
   color: #E2E8F0;
-  height: 100vh;
+  height: 100%;
   position: sticky;
   top: 0;
   z-index: 100;

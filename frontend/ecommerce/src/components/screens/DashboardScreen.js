@@ -137,14 +137,15 @@ export default function DashboardScreen() {
   };
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "var(--color-background)" }}>
+    <div className="d-flex" style={{ height: "calc(100vh - 80px)", overflow: "hidden", backgroundColor: "var(--color-background)" }}>
       {/* 1. Sidebar Panel */}
       <motion.div
         className="sidebar-premium"
         style={{
           width: sidebarCollapsed ? "72px" : `${sidebarWidth}px`,
           position: "relative",
-          userSelect: isResizing ? "none" : "auto"
+          userSelect: isResizing ? "none" : "auto",
+          height: "100%"
         }}
         animate={{ width: sidebarCollapsed ? "72px" : `${sidebarWidth}px` }}
         transition={{ duration: isResizing ? 0 : 0.2 }}
