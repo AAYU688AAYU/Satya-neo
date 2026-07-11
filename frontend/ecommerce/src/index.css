@@ -215,6 +215,17 @@ h6 {
   transition: var(--transition-fast);
 }
 
+.form-floating-premium input::placeholder,
+.form-floating-premium textarea::placeholder {
+  color: transparent;
+}
+
+.form-floating-premium input:focus::placeholder,
+.form-floating-premium textarea:focus::placeholder {
+  color: var(--color-text-muted);
+}
+
+
 .form-floating-premium input:focus~label,
 .form-floating-premium input:not(:placeholder-shown)~label,
 .form-floating-premium select:focus~label,
