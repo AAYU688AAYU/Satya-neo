@@ -1,151 +1,198 @@
-import React, { useState } from "react";
-import { Navbar, Nav, Container, Button, Dropdown } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Button, Dropdown } from "react-bootstrap";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/authActions";
 import logo from "../../assets/images/satya-logo.png";
-import { Search, Bell, Settings, Sun, Moon, LogOut, LayoutDashboard } from "lucide-react";
+import { Search, Bell, Settings, Sun, Moon, LogOut, LayoutDashboard, Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
   const [darkTheme, setDarkTheme] = useState(false);
   const [searchVal, setSearchVal] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
   const logoutHandler = () => {
     dispatch(logout());
+    setMobileMenuOpen(false);
     navigate("/login");
   };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchVal.trim()) {
+      setMobileMenuOpen(false);
       navigate(`/dashboard?search=${searchVal}`);
     }
   };
 
+  // Scroll detection for height transition and theme shift
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Intersection Observer to highlight active link
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    const sections = ["home", "mission", "applications", "research", "resources", "contact"];
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-40% 0px -50% 0px", // triggers when section is in the upper middle
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((id) => {
+      const el = id === "home" ? document.getElementById("hero") : document.getElementById(id);
+      if (el) {
+        observer.observe(el);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [location.pathname]);
+
+  // Smooth scroll handler
+  const handleNavClick = (sectionId) => {
+    if (location.pathname !== "/") {
+      navigate(`/#${sectionId}`);
+    } else {
+      const el = sectionId === "home" ? document.getElementById("hero") : document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (sectionId === "home") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+    setMobileMenuOpen(false);
+  };
+
+  const navItems = [
+    { id: "home", label: "Home" },
+    { id: "mission", label: "Mission" },
+    { id: "applications", label: "Applications" },
+    { id: "research", label: "Research" },
+    { id: "resources", label: "Resources" },
+    { id: "contact", label: "Contact" }
+  ];
+
   return (
-    <Navbar
-      expand="lg"
-      className="glass-header sticky-top py-2"
-      variant="light"
-    >
-      <Container>
-        {/* Left: Brand logo & name */}
-        <Navbar.Brand
-          as={Link}
-          to="/"
-          className="d-flex align-items-center"
-          style={{ cursor: "pointer" }}
+    <>
+      <header
+        className={`glass-header sticky-top d-flex align-items-center ${
+          scrolled ? "navbar-scrolled" : ""
+        }`}
+        style={{
+          height: scrolled ? "72px" : "80px",
+          position: "sticky",
+          top: 0,
+          zIndex: 1000,
+          width: "100%",
+          transition: "all 0.3s ease-in-out",
+        }}
+      >
+        <div
+          className="container d-flex align-items-center justify-content-between"
+          style={{ width: "100%" }}
         >
-          <img
-            src={logo}
-            alt="SATYA-EO"
-            style={{
-              height: "46px",
-              width: "auto",
-              objectFit: "contain",
-            }}
-          />
-        </Navbar.Brand>
-
-        <Navbar.Toggle aria-controls="navbar-nav" />
-
-        <Navbar.Collapse id="navbar-nav" className="justify-content-between">
-          {/* Middle: Professional navigation links */}
-          <Nav className="mx-auto align-items-center">
-            <Nav.Link
-              as={Link}
-              to="/"
-              className="px-3"
+          {/* Logo Alignment Left */}
+          <div onClick={() => handleNavClick("home")} style={{ cursor: "pointer" }} className="d-flex align-items-center">
+            <img
+              src={logo}
+              alt="SATYA-EO Logo"
               style={{
-                fontFamily: "var(--font-secondary)",
-                fontWeight: "500",
-                fontSize: "14px",
-                color: "var(--color-text)",
+                height: scrolled ? "42px" : "46px",
+                width: "auto",
+                objectFit: "contain",
+                transition: "all 0.3s ease-in-out"
               }}
-            >
-              Home
-            </Nav.Link>
+            />
+          </div>
 
-            <Nav.Link
-              as={Link}
+          {/* Desktop Navigation links centered */}
+          <nav className="d-none d-lg-flex align-items-center gap-2">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                className={`nav-link-custom border-0 bg-transparent ${activeSection === item.id ? "active" : ""}`}
+              >
+                {item.label}
+              </button>
+            ))}
+            
+            {/* Direct Dashboard Link */}
+            <Link
               to="/dashboard"
-              className="px-3 d-flex align-items-center gap-2"
-              style={{
-                fontFamily: "var(--font-secondary)",
-                fontWeight: "500",
-                fontSize: "14px",
-                color: "var(--color-text)",
-              }}
+              className={`nav-link-custom ${location.pathname === "/dashboard" ? "active" : ""}`}
             >
-              <LayoutDashboard size={16} className="text-secondary" />
               Dashboard
-            </Nav.Link>
-          </Nav>
+            </Link>
+          </nav>
 
-          {/* Right side controls */}
-          <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+          {/* Desktop Controls Alignment Right */}
+          <div className="d-none d-lg-flex align-items-center gap-3">
             {/* Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="position-relative d-none d-xl-block">
+            <form onSubmit={handleSearchSubmit} className="position-relative">
               <input
                 type="text"
-                placeholder="Search datasets, reports..."
+                placeholder="Search datasets..."
                 value={searchVal}
                 onChange={(e) => setSearchVal(e.target.value)}
-                style={{
-                  padding: "8px 16px 8px 38px",
-                  fontSize: "13px",
-                  borderRadius: "20px",
-                  border: "1px solid var(--color-border)",
-                  backgroundColor: "rgba(0, 0, 0, 0.02)",
-                  outline: "none",
-                  width: "220px",
-                  transition: "var(--transition-fast)"
-                }}
-                onFocus={(e) => {
-                  e.target.style.width = "280px";
-                  e.target.style.backgroundColor = "#fff";
-                  e.target.style.borderColor = "var(--color-secondary)";
-                }}
-                onBlur={(e) => {
-                  e.target.style.width = "220px";
-                  e.target.style.backgroundColor = "rgba(0, 0, 0, 0.02)";
-                  e.target.style.borderColor = "var(--color-border)";
-                }}
+                className="navbar-search-input"
               />
               <Search
-                size={15}
+                size={14}
                 className="position-absolute text-muted"
-                style={{ left: "14px", top: "11px" }}
+                style={{ left: "14px", top: "50%", transform: "translateY(-50%)" }}
               />
             </form>
 
             {/* Notifications icon */}
             <button
-              className="btn-premium btn-premium-ghost p-2 rounded-circle position-relative"
-              style={{ width: "38px", height: "38px" }}
+              className="navbar-icon-btn position-relative"
               title="Notifications"
             >
-              <Bell size={18} className="text-dark" />
-              <span
-                className="position-absolute bg-danger rounded-circle"
-                style={{
-                  width: "7px",
-                  height: "7px",
-                  top: "8px",
-                  right: "8px"
-                }}
-              />
+              <Bell size={18} />
+              <span className="navbar-badge" />
             </button>
 
             {/* Theme Toggle */}
             <button
-              className="btn-premium btn-premium-ghost p-2 rounded-circle"
-              style={{ width: "38px", height: "38px" }}
+              className="navbar-icon-btn"
               onClick={() => setDarkTheme(!darkTheme)}
               title="Theme Toggle"
             >
@@ -154,31 +201,22 @@ function Header() {
 
             {/* Settings */}
             <button
-              className="btn-premium btn-premium-ghost p-2 rounded-circle"
-              style={{ width: "38px", height: "38px" }}
+              className="navbar-icon-btn"
               title="Settings"
               onClick={() => navigate("/dashboard")}
             >
               <Settings size={18} />
             </button>
 
-            {/* User Profile Menu */}
+            {/* User Profile / CTA */}
             {userInfo ? (
               <Dropdown align="end">
                 <Dropdown.Toggle
                   as="div"
                   style={{ cursor: "pointer" }}
-                  className="d-flex align-items-center gap-2"
+                  className="d-flex align-items-center"
                 >
-                  <div
-                    className="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle font-weight-bold"
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      fontSize: "14px",
-                      backgroundColor: "var(--color-primary)"
-                    }}
-                  >
+                  <div className="navbar-user-avatar">
                     {userInfo.name ? userInfo.name.charAt(0).toUpperCase() : "U"}
                   </div>
                 </Dropdown.Toggle>
@@ -207,30 +245,144 @@ function Header() {
                 </Dropdown.Menu>
               </Dropdown>
             ) : (
-              <div className="d-flex gap-2">
-                <Button
-                  as={Link}
+              <div className="d-flex align-items-center gap-2">
+                <Link
                   to="/login"
-                  variant="outline-primary"
-                  className="btn-premium btn-premium-secondary"
-                  style={{ padding: "6px 18px", fontSize: "13px" }}
+                  className="btn-signin-premium"
                 >
                   Sign In
-                </Button>
-                <Button
-                  as={Link}
+                </Link>
+                <Link
                   to="/signup"
-                  className="btn-premium btn-premium-primary"
-                  style={{ padding: "6px 18px", fontSize: "13px" }}
+                  className="btn-cta-premium"
                 >
                   Register
-                </Button>
+                </Link>
               </div>
             )}
           </div>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+
+          {/* Mobile Hamburger Toggle Button */}
+          <div className="d-flex d-lg-none align-items-center gap-3">
+            {!userInfo && (
+              <Link to="/signup" className="btn-cta-premium py-1.5 px-3" style={{ fontSize: "12px" }}>
+                Register
+              </Link>
+            )}
+
+            {userInfo && (
+              <div className="navbar-user-avatar" onClick={() => navigate("/dashboard")}>
+                {userInfo.name ? userInfo.name.charAt(0).toUpperCase() : "U"}
+              </div>
+            )}
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="navbar-toggle-btn"
+              aria-label="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Slide-in Mobile Menu Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.25 }}
+            className="mobile-overlay-menu"
+          >
+            <div className="container py-4 d-flex flex-column h-100 justify-content-between">
+              <div className="d-flex flex-column gap-3">
+                {/* Search Bar */}
+                <form onSubmit={handleSearchSubmit} className="position-relative w-100">
+                  <input
+                    type="text"
+                    placeholder="Search datasets..."
+                    value={searchVal}
+                    onChange={(e) => setSearchVal(e.target.value)}
+                    className="navbar-search-input w-100"
+                    style={{ width: "100%" }}
+                  />
+                  <Search
+                    size={14}
+                    className="position-absolute text-muted"
+                    style={{ left: "14px", top: "50%", transform: "translateY(-50%)" }}
+                  />
+                </form>
+
+                <nav className="d-flex flex-column gap-2 mt-2">
+                  {navItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavClick(item.id)}
+                      className={`mobile-nav-link text-left border-0 bg-transparent w-100 ${activeSection === item.id ? "text-primary" : ""}`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                  
+                  <Link
+                    to="/dashboard"
+                    className="mobile-nav-link"
+                  >
+                    Dashboard
+                  </Link>
+                </nav>
+              </div>
+
+              <div className="d-flex flex-column gap-3 border-top pt-4">
+                {userInfo ? (
+                  <>
+                    <div className="d-flex align-items-center gap-3 px-2 mb-2">
+                      <div className="navbar-user-avatar">
+                        {userInfo.name ? userInfo.name.charAt(0).toUpperCase() : "U"}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: "600", fontSize: "15px", color: "var(--color-primary)" }}>
+                          {userInfo.name}
+                        </div>
+                        <div style={{ fontSize: "13px", color: "var(--color-text-muted)" }}>
+                          {userInfo.email}
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={logoutHandler}
+                      variant="outline-danger"
+                      className="w-100 py-2"
+                      style={{ borderRadius: "10px", fontSize: "14px" }}
+                    >
+                      <LogOut size={16} className="me-2" /> Logout
+                    </Button>
+                  </>
+                ) : (
+                  <div className="d-flex gap-3">
+                    <Link
+                      to="/login"
+                      className="btn-signin-premium text-center flex-grow-1"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/signup"
+                      className="btn-cta-premium text-center flex-grow-1"
+                    >
+                      Register
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 

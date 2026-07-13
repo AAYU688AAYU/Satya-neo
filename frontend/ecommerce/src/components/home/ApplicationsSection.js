@@ -44,6 +44,7 @@ const applications = [
 function ApplicationsSection() {
   return (
     <section
+      id="applications"
       style={{
         background: "var(--color-background)",
         padding: "100px 0",

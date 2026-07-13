@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 function HeroSection() {
   return (
     <section
+      id="hero"
       style={{
         minHeight: "90vh",
         background: "radial-gradient(ellipse at center, #0B2545 0%, #071B34 100%)",
