@@ -55,7 +55,7 @@ function Header() {
       return;
     }
 
-    const sections = ["home", "mission", "applications", "research", "resources", "contact"];
+    const sections = ["home", "mission", "applications", "research", "contact"];
 
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
@@ -105,7 +105,6 @@ function Header() {
     { id: "mission", label: "Mission" },
     { id: "applications", label: "Applications" },
     { id: "research", label: "Research" },
-    { id: "resources", label: "Resources" },
     { id: "contact", label: "Contact" }
   ];
 
