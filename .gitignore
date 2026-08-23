@@ -7,3 +7,7 @@ __pycache__/
 .DS_Store
 .vercel
 .env*
+backend/ecomproject/media/uploads/*
+backend/ecomproject/media/processed/*
+backend/ecomproject/staticfiles/
+backend/ecomproject/*.sqlite3
