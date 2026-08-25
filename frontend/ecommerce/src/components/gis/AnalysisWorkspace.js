@@ -7,7 +7,7 @@ import cloudyDefaultImg from "../../assets/images/cloudy.png";
 import cloudfreeDefaultImg from "../../assets/images/declouded.png";
 import sarDefaultImg from "../../assets/images/sar.png";
 
-export default function AnalysisWorkspace({ uploadedFile }) {
+export default function AnalysisWorkspace({ uploadedFile, onImagesChange }) {
   const containerRef = useRef(null);
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -104,6 +104,9 @@ export default function AnalysisWorkspace({ uploadedFile }) {
         setProgressText("Preprocessing multi-spectral channels (13-band Sentinel-2 + 2-band SAR)...");
         const formData = new FormData();
         formData.append("cloudy", uploadedFile.rawFile);
+        if (uploadedFile.sarFile) {
+          formData.append("sar", uploadedFile.sarFile);
+        }
         formData.append("max_resolution", "512");
 
         res = await axios.post("/api/eo/decloud/", formData, {
@@ -120,6 +123,7 @@ export default function AnalysisWorkspace({ uploadedFile }) {
       setProgressText("Synthesizing cloud-free composite, NDVI colormap, and spectral metrics...");
 
       if (res.data && res.data.success) {
+        if (onImagesChange) onImagesChange(res.data.images);
         setTimeout(() => {
           setModelImages(res.data.images);
           if (res.data.metrics) {
@@ -146,6 +150,7 @@ export default function AnalysisWorkspace({ uploadedFile }) {
     setBandMode("declouded");
     setSliderPosition(50);
     setOpacity(1.0);
+    if (onImagesChange) onImagesChange(null);
   };
 
   const downloadImage = (base64Data, filename) => {

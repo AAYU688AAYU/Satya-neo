@@ -8,6 +8,7 @@ import os
 import torch
 import torch.nn as nn
 import logging
+from threading import Lock
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +69,7 @@ class DSen2CR_Net(nn.Module):
 # Global singleton model cache
 _cached_model = None
 _cached_device = None
+_model_lock = Lock()
 
 
 def get_inference_device() -> torch.device:
@@ -76,7 +78,7 @@ def get_inference_device() -> torch.device:
     Prefers Apple Silicon MPS (Metal Performance Shaders) on macOS,
     CUDA on GPU servers, and falls back to CPU.
     """
-    if torch.backends.mps.is_available():
+    if torch.backends.mps.is_built() and torch.backends.mps.is_available():
         return torch.device('mps')
     elif torch.cuda.is_available():
         return torch.device('cuda')
@@ -93,23 +95,27 @@ def get_model(device: torch.device = None):
         device = get_inference_device()
 
     if _cached_model is None or _cached_device != device:
-        logger.info(f"[DSen2-CR] Initializing DSen2-CR model on {device}...")
-        model = DSen2CR_Net(in_channels=15, out_channels=13, feature_size=256, num_blocks=16)
+        with _model_lock:
+            if _cached_model is not None and _cached_device == device:
+                return _cached_model, _cached_device
 
-        if os.path.exists(CHECKPOINT_PATH):
-            try:
-                state_dict = torch.load(CHECKPOINT_PATH, map_location='cpu')
-                model.load_state_dict(state_dict)
-                logger.info(f"[DSen2-CR] Successfully loaded checkpoint from {CHECKPOINT_PATH}")
-            except Exception as e:
-                logger.warning(f"[DSen2-CR] Could not load checkpoint ({e}), initializing default weights.")
-        else:
-            logger.warning(f"[DSen2-CR] Checkpoint not found at {CHECKPOINT_PATH}. Using randomized weights.")
+            logger.info(f"[DSen2-CR] Initializing DSen2-CR model on {device}...")
+            model = DSen2CR_Net(in_channels=15, out_channels=13, feature_size=256, num_blocks=16)
 
-        model.to(device)
-        model.eval()
-        _cached_model = model
-        _cached_device = device
+            if os.path.exists(CHECKPOINT_PATH):
+                try:
+                    state_dict = torch.load(CHECKPOINT_PATH, map_location='cpu', weights_only=True)
+                    model.load_state_dict(state_dict)
+                    logger.info(f"[DSen2-CR] Successfully loaded checkpoint from {CHECKPOINT_PATH}")
+                except Exception as e:
+                    logger.warning(f"[DSen2-CR] Could not load checkpoint ({e}), initializing default weights.")
+            else:
+                logger.warning(f"[DSen2-CR] Checkpoint not found at {CHECKPOINT_PATH}. Using randomized weights.")
+
+            model.to(device)
+            model.eval()
+            _cached_model = model
+            _cached_device = device
 
     return _cached_model, _cached_device
 

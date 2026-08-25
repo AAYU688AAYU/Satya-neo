@@ -31,6 +31,8 @@ export default function UploadSystem({ onUploadSuccess }) {
   ]);
   const fileInputRef = useRef(null);
   const folderInputRef = useRef(null);
+  const sarInputRef = useRef(null);
+  const [sarFile, setSarFile] = useState(null);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -81,7 +83,7 @@ export default function UploadSystem({ onUploadSuccess }) {
       ]);
 
       if (onUploadSuccess) {
-        onUploadSuccess({ ...metadata, rawFile: queueItem.file });
+        onUploadSuccess({ ...metadata, rawFile: queueItem.file, sarFile });
       }
     } catch (err) {
       console.error("Upload error:", err);
@@ -204,6 +206,25 @@ export default function UploadSystem({ onUploadSuccess }) {
           directory="true"
           className="d-none"
           onChange={handleFileSelect}
+        />
+      </div>
+
+      <div className="d-flex align-items-center justify-content-between mt-3 p-2 border rounded">
+        <div>
+          <strong style={{ fontSize: "12px" }}>Optional Sentinel-1 SAR input</strong>
+          <div className="text-muted" style={{ fontSize: "11px" }}>
+            {sarFile ? sarFile.name : "Add VV/VH imagery for multi-sensor fusion"}
+          </div>
+        </div>
+        <Button size="sm" variant="outline-secondary" onClick={() => sarInputRef.current.click()}>
+          Select SAR
+        </Button>
+        <input
+          ref={sarInputRef}
+          type="file"
+          accept=".tif,.tiff,.png,.jpeg,.jpg"
+          className="d-none"
+          onChange={(event) => setSarFile(event.target.files?.[0] || null)}
         />
       </div>
 

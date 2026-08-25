@@ -333,6 +333,10 @@ def run_dsen2cr_inference(
         new_h = (h // 16) * 16
         new_w = (w // 16) * 16
 
+    # Convolution accepts smaller tiles, but zero-sized tensors do not.
+    new_h = max(16, new_h)
+    new_w = max(16, new_w)
+
     cloudy_raw = cloudy_raw[:, :new_h, :new_w]
     sar_raw = sar_raw[:, :new_h, :new_w]
 

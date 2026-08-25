@@ -37,6 +37,7 @@ export default function DashboardScreen() {
     integrity: "Verified & Pre-loaded",
     isSample: true
   });
+  const [analysisImages, setAnalysisImages] = useState(null);
   const [rasters, setRasters] = useState(initialRasters);
   const [modelInfo, setModelInfo] = useState({
     model_name: "DSen2-CR (Deep Multi-Sensor Cloud Removal Network)",
@@ -953,12 +954,12 @@ export default function DashboardScreen() {
 
               {/* Right Column: Leaflet Map Viewer */}
               <Col lg={8}>
-                <MapViewer uploadedFile={activeGisFile} />
+                <MapViewer uploadedFile={activeGisFile} analysisImages={analysisImages} />
               </Col>
 
               {/* Bottom: Analysis Workspace */}
               <Col xs={12}>
-                <AnalysisWorkspace uploadedFile={activeGisFile} />
+                <AnalysisWorkspace uploadedFile={activeGisFile} onImagesChange={setAnalysisImages} />
               </Col>
             </Row>
           </motion.div>

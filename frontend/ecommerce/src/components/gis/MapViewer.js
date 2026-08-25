@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Card, Button, Form } from "react-bootstrap";
 import { Maximize2, Minimize2, PenTool, Ruler, Trash2, CheckCircle2 } from "lucide-react";
 
-export default function MapViewer({ uploadedFile }) {
+export default function MapViewer({ uploadedFile, analysisImages }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const activeTileLayerRef = useRef(null);
@@ -10,6 +10,7 @@ export default function MapViewer({ uploadedFile }) {
   const customShapesRef = useRef([]);
   const measurementLineRef = useRef(null);
   const measurementMarkersRef = useRef([]);
+  const imageOverlaysRef = useRef({});
 
   const [coordinates, setCoordinates] = useState({ lat: 26.2389, lng: 73.0243 });
   const [zoom, setZoom] = useState(6);
@@ -17,6 +18,13 @@ export default function MapViewer({ uploadedFile }) {
   const [basemap, setBasemap] = useState("satellite");
   const [drawingMode, setDrawingMode] = useState(false);
   const [measuringMode, setMeasuringMode] = useState(false);
+  const [overlayOpacity, setOverlayOpacity] = useState(0.7);
+  const [visibleOverlays, setVisibleOverlays] = useState({
+    declouded: true,
+    ndvi: false,
+    mask: false,
+    sar: false
+  });
   
   const [tempPoints, setTempPoints] = useState([]);
   const [measuredDistance, setMeasuredDistance] = useState(0);
@@ -256,6 +264,33 @@ export default function MapViewer({ uploadedFile }) {
     map.setZoom(12);
   }, [uploadedFile]);
 
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !window.L) return;
+    const L = window.L;
+    Object.values(imageOverlaysRef.current).forEach((overlay) => map.removeLayer(overlay));
+    imageOverlaysRef.current = {};
+
+    if (!analysisImages) return;
+    const bounds = map.getBounds();
+    const layers = { declouded: analysisImages.declouded, ndvi: analysisImages.ndvi, mask: analysisImages.mask, sar: analysisImages.sar };
+    Object.entries(layers).forEach(([name, image]) => {
+      if (!image) return;
+      const overlay = L.imageOverlay(image, bounds, { opacity: overlayOpacity, interactive: false });
+      imageOverlaysRef.current[name] = overlay;
+      if (visibleOverlays[name]) overlay.addTo(map);
+    });
+  }, [analysisImages, overlayOpacity, visibleOverlays]);
+
+  const toggleOverlay = (name) => {
+    const overlay = imageOverlaysRef.current[name];
+    const map = mapInstanceRef.current;
+    if (!overlay || !map) return;
+    if (visibleOverlays[name]) map.removeLayer(overlay);
+    else overlay.addTo(map);
+    setVisibleOverlays((previous) => ({ ...previous, [name]: !previous[name] }));
+  };
+
   return (
     <Card className="card-premium border-0 h-100 p-0 overflow-hidden position-relative">
       {/* GIS Map Controls Toolbar overlay */}
@@ -271,6 +306,29 @@ export default function MapViewer({ uploadedFile }) {
             <option value="satellite">🛰️ Satellite view</option>
             <option value="street">🗺️ Street view</option>
           </Form.Select>
+
+          {analysisImages && (
+            <div className="d-flex align-items-center gap-2" style={{ fontSize: "11px" }}>
+              {Object.entries({ declouded: "AI", ndvi: "NDVI", mask: "Mask", sar: "SAR" }).map(([name, label]) => (
+                <Form.Check
+                  key={name}
+                  type="checkbox"
+                  label={label}
+                  checked={visibleOverlays[name]}
+                  onChange={() => toggleOverlay(name)}
+                />
+              ))}
+              <Form.Range
+                aria-label="Overlay opacity"
+                min="0"
+                max="1"
+                step="0.05"
+                value={overlayOpacity}
+                onChange={(event) => setOverlayOpacity(Number(event.target.value))}
+                style={{ width: "90px" }}
+              />
+            </div>
+          )}
 
           {/* Draw ROI Polygon */}
           <Button

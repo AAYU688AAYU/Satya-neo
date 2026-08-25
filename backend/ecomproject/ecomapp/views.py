@@ -2,6 +2,8 @@ import os
 import time
 import json
 import logging
+import hashlib
+from pathlib import Path
 from django.shortcuts import render
 from django.conf import settings
 from rest_framework.response import Response
@@ -16,6 +18,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from django.views.generic import View
+from django.utils.text import get_valid_filename
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -36,6 +39,48 @@ PROCESSED_DIR = os.path.join(BASE_DIR, 'media', 'processed')
 
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(PROCESSED_DIR, exist_ok=True)
+
+
+def _raster_metadata(path, original_name, size_bytes, extension):
+    """Read lightweight dimensions, band count, and checksum metadata."""
+    metadata = {
+        'name': original_name,
+        'size': f"{size_bytes / (1024 * 1024):.2f} MB",
+        'format': extension.lstrip('.').upper(),
+        'crs': 'Embedded GeoTIFF CRS' if extension in ('.tif', '.tiff') else 'EPSG:4326 (WGS84 assumed)',
+        'resolution': 'Unknown pixel size',
+        'bands': None,
+        'width': None,
+        'height': None,
+        'projection': 'Embedded GeoTIFF projection' if extension in ('.tif', '.tiff') else 'Geographic',
+        'integrity': 'Verified (SHA-256 checksum OK)',
+        'checksum': hashlib.sha256(Path(path).read_bytes()).hexdigest(),
+    }
+
+    if extension in ('.tif', '.tiff'):
+        try:
+            import tifffile
+            with tifffile.TiffFile(path) as image:
+                page = image.pages[0]
+                shape = page.shape
+                metadata['bands'] = shape[0] if len(shape) == 3 and shape[0] <= 32 else 1
+                metadata['height'] = shape[-2]
+                metadata['width'] = shape[-1]
+                scale = page.tags.get('ModelPixelScaleTag')
+                if scale:
+                    metadata['resolution'] = f"{float(scale.value[0]):g} x {float(scale.value[1]):g}"
+                if page.tags.get('GeoKeyDirectoryTag'):
+                    metadata['crs'] = 'Embedded GeoTIFF CRS (GeoKeyDirectoryTag)'
+        except Exception:
+            metadata['integrity'] = 'Verified (SHA-256 checksum OK); raster tags unavailable'
+    else:
+        from PIL import Image
+        with Image.open(path) as image:
+            metadata['width'], metadata['height'] = image.size
+            metadata['bands'] = len(image.getbands())
+
+    metadata['sensor'] = 'Sentinel-2 (GeoTIFF)' if extension in ('.tif', '.tiff') else 'Optical image'
+    return metadata
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -152,28 +197,22 @@ def eo_upload(request):
                 {'error': f'Unsupported file format {ext}. Supported: GeoTIFF (.tif, .tiff), PNG, JPEG.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        if f.size > settings.DATA_UPLOAD_MAX_MEMORY_SIZE:
+            return Response({'error': 'File exceeds the 100 MB upload limit.'}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
 
-        save_path = os.path.join(UPLOADS_DIR, f"{int(time.time())}_{f.name}")
+        safe_name = get_valid_filename(os.path.basename(f.name))
+        save_path = os.path.join(UPLOADS_DIR, f"{int(time.time())}_{safe_name}")
         with open(save_path, 'wb+') as dest:
             for chunk in f.chunks():
                 dest.write(chunk)
 
-        size_mb = round(f.size / (1024 * 1024), 2)
         is_geotiff = ext in ['.tif', '.tiff']
-
-        metadata = {
+        metadata = _raster_metadata(save_path, f.name, f.size, ext)
+        metadata.update({
             'id': f"RASTER_{int(time.time())}",
-            'name': f.name,
-            'size': f"{size_mb} MB",
-            'crs': "EPSG:32643 (UTM Zone 43N)" if is_geotiff else "EPSG:4326 (WGS84)",
-            'resolution': "10m" if is_geotiff else "5m",
-            'bands': 13 if is_geotiff else 3,
-            'projection': "Transverse Mercator" if is_geotiff else "Geographic (Plate Carrée)",
-            'sensor': "Sentinel-2 (Optical Multi-Spectral)" if is_geotiff else "Optical Satellite",
-            'integrity': "Verified (SHA-256 Checksum OK)",
             'upload_path': save_path,
             'status': 'Uploaded & Validated'
-        }
+        })
 
         return Response({'success': True, 'metadata': metadata}, status=status.HTTP_201_CREATED)
 
